@@ -1,14 +1,13 @@
 .container {
   display: flex;
   flex-wrap: wrap;
-  margin: 0 auto;
-  width: 500px;
+  margin: 10px auto;
+  width: 700px;
 }
 .unit {
-  width: 2px;
-  height: 2px;
+  width: 3px;
+  height: 3px;
   margin: 1px;
-  display: inline-block;
 }
 .past {
   background-color: lightblue;

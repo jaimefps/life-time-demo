@@ -1,5 +1,10 @@
 import { useEffect, useRef } from "react";
 
+/**
+ * React Lifecycle hooks experiments.
+ * Unrelated to "lifetime" code.
+ */
+
 export function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
@@ -8,34 +13,21 @@ export function usePrevious(value) {
   return ref.current;
 }
 
-export const useComponentDidUpdate = (callback, dependencies) => {
-  const prevDependencies = usePrevious(dependencies);
-  const callbackRef = useRef(callback);
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, []);
-  useEffect(() => {
-    callbackRef.current(prevDependencies, dependencies);
-  }, dependencies);
-};
-
-export const useConditionalState = () => {
-  const [state, setState] = useState({ a: "string", b: 0, c: [] });
-};
-
 export const useComponentDidMount = (callback) => {
-  const callbackRef = useRef(callback);
+  const ref = useRef(callback);
   useEffect(() => {
-    callbackRef.current();
+    ref.current();
   }, []);
 };
 
 export const useComponentWillUnmount = (callback) => {
-  const callbackRef = useRef(callback);
+  const refCallback = useRef(callback);
   useEffect(() => {
-    callbackRef.current = callback;
+    refCallback.current = callback;
   }, [callback]);
   useEffect(() => {
-    return () => callbackRef.current();
+    return () => {
+      refCallback.current();
+    };
   }, []);
 };
