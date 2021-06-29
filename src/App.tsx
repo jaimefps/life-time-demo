@@ -1,7 +1,7 @@
-import { FC, ReactElement, useEffect, useMemo, useRef, useState } from "react";
-import { eachDayOfInterval } from "date-fns";
-import { combine } from "zustand/middleware";
 import create from "zustand";
+import { combine } from "zustand/middleware";
+import { eachDayOfInterval } from "date-fns";
+import { FC, ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
 /**********************************************
@@ -10,11 +10,11 @@ import "./App.css";
  **********************************************/
 
 // MAX_PER_LIST affects the performance speed.
-// It determines how many UnitGroups we need to
+// It determines how many UnitLists we need to
 // create enough Units to reach the LIFE_EXPECTANCY.
-const MAX_PER_LIST = 50;
+const MAX_PER_LIST = 69;
 const LIFE_EXPECTANCY = 75;
-const DATE_OF_BIRTH = new Date(2010, 0, 17);
+const DATE_OF_BIRTH = new Date(1989, 0, 17);
 
 /**********************************************
  * Implementation details.
@@ -23,7 +23,7 @@ const DATE_OF_BIRTH = new Date(2010, 0, 17);
 
 type UnitStyle = "present" | "past" | "future";
 type UnitProps = { styleType: UnitStyle };
-type UnitGroupProps = { round: number; ageInDays: number };
+type UnitListProps = { round: number; ageInDays: number };
 
 const getLocalCount = (count: number, round: number) => {
   const currRound = Math.floor(count / MAX_PER_LIST);
@@ -32,9 +32,9 @@ const getLocalCount = (count: number, round: number) => {
   return MAX_PER_LIST;
 };
 
-const getUnitStyle = (unitNum: number, ageInDays: number) => {
-  if (unitNum < ageInDays) return "past";
-  if (unitNum === ageInDays) return "present";
+const getUnitStyle = (absPosition: number, ageInDays: number) => {
+  if (absPosition < ageInDays) return "past";
+  if (absPosition === ageInDays) return "present";
   return "future";
 };
 
@@ -54,6 +54,10 @@ const useStore = create(
     },
   }))
 );
+
+const useLocalCount = (round: number) => {
+  return useStore((state) => getLocalCount(state.count, round));
+};
 
 const useLifeData = () => {
   return useMemo(() => {
@@ -88,19 +92,19 @@ const Unit: FC<UnitProps> = ({ styleType }) => {
 };
 
 // Only re-renders when its "localCount" changes.
-const UnitGroup: FC<UnitGroupProps> = ({ round, ageInDays }) => {
-  const localCount = useStore((state) => getLocalCount(state.count, round));
+const UnitList: FC<UnitListProps> = ({ round, ageInDays }) => {
+  const localCount = useLocalCount(round);
   const result: ReactElement<typeof Unit>[] = [];
   for (let i = 0; i < localCount; i++) {
     const absPosition = getAbsPosition(round, i);
-    const unitType = getUnitStyle(absPosition, ageInDays);
-    result.push(<Unit key={absPosition} styleType={unitType} />);
+    const untilStyle = getUnitStyle(absPosition, ageInDays);
+    result.push(<Unit key={absPosition} styleType={untilStyle} />);
   }
   return <>{result}</>;
 };
 
-// Handles timer as a separate component to avoid
-// inducing re-renders in <App /> and <Collection />.
+// Handles time updates as a separate component to
+// avoid inducing re-renders in <UnitListGroup />.
 const Ticker = () => {
   const { daysInLife } = useLifeData();
   const count = useTimedCount(daysInLife);
@@ -112,14 +116,13 @@ const Ticker = () => {
   return null;
 };
 
-// Should render as
-// a whole only once.
-const Collection = () => {
+// Should render once.
+const UnitListGroup = () => {
   const { daysInLife, ageInDays } = useLifeData();
   const rounds = getRoundsTotal(daysInLife);
-  const collection: ReactElement<typeof UnitGroup>[] = [];
+  const collection: ReactElement<typeof UnitList>[] = [];
   for (let i = 0; i < rounds; i++) {
-    collection.push(<UnitGroup key={i} round={i} ageInDays={ageInDays} />);
+    collection.push(<UnitList key={i} round={i} ageInDays={ageInDays} />);
   }
   return <>{collection}</>;
 };
@@ -128,7 +131,7 @@ const App = () => {
   return (
     <div className="container">
       <Ticker />
-      <Collection />
+      <UnitListGroup />
     </div>
   );
 };
