@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 /**
- * React Lifecycle hooks experiments.
+ * "React Lifecycle" hook experiments.
  * Unrelated to "lifetime" code.
  */
 
@@ -16,7 +16,7 @@ export function usePrevious(value) {
 export const useComponentDidMount = (callback) => {
   const ref = useRef(callback);
   useEffect(() => {
-    ref.current();
+    callback();
   }, []);
 };
 
