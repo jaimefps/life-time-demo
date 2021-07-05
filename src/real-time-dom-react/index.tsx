@@ -1,25 +1,14 @@
 import create from "zustand";
 import { combine } from "zustand/middleware";
-import { eachDayOfInterval } from "date-fns";
-import { FC, ReactElement, useEffect, useMemo, useRef, useState } from "react";
-console.log("___real-time-dom___");
-/**********************************************
- * Play with these numbers to change the
- * performance and size of the UI.
- **********************************************/
+import { FC, ReactElement, useEffect, useRef } from "react";
+import { useLifeData, useTimedCount } from "../hooks";
+import { MAX_PER_LIST } from "../config";
 
-const MAX_PER_LIST = 69;
-const LIFE_EXPECTANCY = 75;
-const DATE_OF_BIRTH = new Date(1989, 0, 17);
-
-/**********************************************
- * Implementation details.
- * No need to change code below.
- **********************************************/
+console.log("___real-time-dom-react___");
 
 type UnitStyle = "present" | "past" | "future";
-type UnitProps = { styleType: UnitStyle };
 type UnitListProps = { round: number; ageInDays: number };
+type UnitProps = { styleType: UnitStyle };
 
 const getLocalCount = (count: number, round: number) => {
   const currRound = Math.floor(count / MAX_PER_LIST);
@@ -53,34 +42,6 @@ const useStore = create(
 
 const useLocalCount = (round: number) => {
   return useStore((state) => getLocalCount(state.count, round));
-};
-
-const useLifeData = () => {
-  return useMemo(() => {
-    return {
-      daysInLife: 365 * LIFE_EXPECTANCY,
-      // meant to account for leap years:
-      ageInDays: eachDayOfInterval({
-        start: DATE_OF_BIRTH,
-        end: new Date(),
-      }).length,
-    };
-  }, []);
-};
-
-const useTimedCount = (max: number, interval?: number) => {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (count < max) {
-        setCount(count + 1);
-      }
-    }, interval ?? 1);
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [count, setCount, interval, max]);
-  return count;
 };
 
 const Unit: FC<UnitProps> = ({ styleType }) => {

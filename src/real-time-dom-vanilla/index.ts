@@ -1,17 +1,7 @@
 import { eachDayOfInterval } from "date-fns";
+import { DATE_OF_BIRTH, LIFE_EXPECTANCY } from "../config";
+
 console.log("___vanilla-dom___");
-/**********************************************
- * Play with these numbers to change the
- * performance and size of the UI.
- **********************************************/
-
-const LIFE_EXPECTANCY = 75;
-const DATE_OF_BIRTH = new Date(1989, 0, 17);
-
-/**********************************************
- * Implementation details.
- * No need to change code below.
- **********************************************/
 
 const daysInLife = 365 * LIFE_EXPECTANCY;
 const ageInDays = eachDayOfInterval({
@@ -19,7 +9,6 @@ const ageInDays = eachDayOfInterval({
   end: new Date(),
 }).length;
 
-// only once:
 const container = document.createElement("div");
 const root = document.getElementById("root") as HTMLElement;
 container.classList.add("container");
@@ -47,5 +36,3 @@ const interval = setInterval(() => {
     clearInterval(interval);
   }
 }, 1);
-
-export {};

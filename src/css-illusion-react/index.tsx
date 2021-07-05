@@ -1,27 +1,9 @@
 import create from "zustand";
 import { combine } from "zustand/middleware";
-import { eachDayOfInterval } from "date-fns";
-import React, {
-  FC,
-  ReactElement,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-console.log("___css-illusion___");
-/**********************************************
- * Play with these numbers to change the
- * performance and size of the UI.
- **********************************************/
+import React, { FC, ReactElement, useEffect, useRef } from "react";
+import { useLifeData, useTimedCount } from "../hooks";
 
-const LIFE_EXPECTANCY = 75;
-const DATE_OF_BIRTH = new Date(1989, 0, 17);
-
-/**********************************************
- * Implementation details.
- * No need to change code below.
- **********************************************/
+console.log("___css-illusion-react___");
 
 type UnitStyle = "present" | "past" | "future";
 type UnitProps = { idx: number; ageInDays: number };
@@ -44,34 +26,6 @@ const useStore = create(
     },
   }))
 );
-
-const useLifeData = () => {
-  return useMemo(() => {
-    return {
-      daysInLife: 365 * LIFE_EXPECTANCY,
-      // meant to account for leap years:
-      ageInDays: eachDayOfInterval({
-        start: DATE_OF_BIRTH,
-        end: new Date(),
-      }).length,
-    };
-  }, []);
-};
-
-const useTimedCount = (max: number, interval?: number) => {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (count < max) {
-        setCount(count + 1);
-      }
-    }, interval ?? 1);
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [count, setCount, interval, max]);
-  return count;
-};
 
 // Handles time updates as a separate component to
 // avoid inducing re-renders in <UnitList />.
